@@ -32,7 +32,7 @@ Recommended values:
 
 - `CONTACT_EMAIL=franksitesza@gmail.com`
 - `CONTACT_FROM=Frank Sites <onboarding@resend.dev>` for initial testing
-- `ALLOWED_ORIGINS=https://franksites.co,https://www.franksites.co`
+- `ALLOWED_ORIGINS=https://franksites.co.za,https://www.franksites.co.za`
 
 For production, verify your sending domain in Resend and replace `CONTACT_FROM` with an address on your own domain.
 

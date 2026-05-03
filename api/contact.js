@@ -59,8 +59,8 @@ const isAllowedOrigin = (origin, host) => {
   const allowList = new Set([
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://franksites.co",
-    "https://www.franksites.co",
+    "https://franksites.co.za",
+    "https://www.franksites.co.za",
     ...configuredOrigins,
   ]);
 
