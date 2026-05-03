@@ -75,12 +75,22 @@ const isAllowedOrigin = (origin, host) => {
   try {
     const originUrl = new URL(origin);
     const normalizedHost = String(host || "").toLowerCase();
+    const sameHost = originUrl.host.toLowerCase() === normalizedHost;
+
+    if (
+      sameHost &&
+      (originUrl.protocol === "https:" ||
+        normalizedHost === "localhost:5173" ||
+        normalizedHost === "127.0.0.1:5173")
+    ) {
+      return true;
+    }
 
     if (
       originUrl.protocol === "https:" &&
       originUrl.hostname.endsWith(".vercel.app") &&
       normalizedHost.endsWith(".vercel.app") &&
-      originUrl.host.toLowerCase() === normalizedHost
+      sameHost
     ) {
       return true;
     }
