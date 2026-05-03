@@ -2,8 +2,8 @@ import { useEffect, useMemo } from "react";
 
 export const SITE_CONFIG = {
   brandName: "Frank Sites",
-  siteUrl: "https://franksites.co",
-  contactEmail: "frankdesignza@gmail.com",
+  siteUrl: "https://franksites.co.za",
+  contactEmail: "franksitesza@gmail.com",
   areaServed: "South Africa",
   locale: "en_ZA",
   socialImagePath: "/favicon.svg",
@@ -11,7 +11,7 @@ export const SITE_CONFIG = {
 
 const HOME_TITLE = "Frank Sites | Professional Websites for Small Businesses";
 const HOME_DESCRIPTION =
-  "Frank Sites builds professional, high-performing websites for small businesses with mobile-first design, SEO foundations, and complete ownership from day one.";
+  "Frank Sites builds professional, high-performing websites for small businesses across South Africa, with a strong presence around Cape Town, mobile-first design, SEO foundations, and complete ownership from day one.";
 
 const SERVICES = [
   "Custom Website Design",
@@ -46,6 +46,12 @@ const homeSchema = {
       url: `${SITE_CONFIG.siteUrl}/`,
       email: SITE_CONFIG.contactEmail,
       areaServed: SITE_CONFIG.areaServed,
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: "ZA",
+        addressRegion: "Western Cape",
+        addressLocality: "Cape Town",
+      },
       logo: absoluteUrl(SITE_CONFIG.socialImagePath),
     },
     {
@@ -64,6 +70,20 @@ const homeSchema = {
       url: `${SITE_CONFIG.siteUrl}/`,
       email: SITE_CONFIG.contactEmail,
       areaServed: SITE_CONFIG.areaServed,
+      serviceArea: [
+        {
+          "@type": "AdministrativeArea",
+          name: "Western Cape",
+        },
+        {
+          "@type": "City",
+          name: "Cape Town",
+        },
+        {
+          "@type": "Country",
+          name: "South Africa",
+        },
+      ],
       provider: { "@id": `${SITE_CONFIG.siteUrl}/#organization` },
     },
     ...SERVICES.map((serviceName, index) => ({

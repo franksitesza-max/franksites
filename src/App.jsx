@@ -23,7 +23,6 @@ const C = {
 };
 
 const CONTACT_EMAIL = SITE_CONFIG.contactEmail;
-const SITE_URL = SITE_CONFIG.siteUrl;
 
 const scrollToHash = (hash) => {
   if (typeof window === "undefined" || !hash?.startsWith("#")) {
@@ -380,6 +379,7 @@ const Button = ({
   onClick,
   type = "button",
   className = "",
+  disabled = false,
 }) => {
   const Tag = href ? "a" : "button";
   const external = href && /^https?:\/\//i.test(href);
@@ -390,6 +390,11 @@ const Button = ({
       className={`button button--${variant} ${className}`.trim()}
       href={href}
       onClick={(event) => {
+        if (disabled) {
+          event.preventDefault();
+          return;
+        }
+
         if (isHashLink) {
           event.preventDefault();
           scrollToHash(href);
@@ -400,6 +405,8 @@ const Button = ({
       rel={external ? "noopener noreferrer" : undefined}
       target={external ? "_blank" : undefined}
       type={href ? undefined : type}
+      disabled={href ? undefined : disabled}
+      aria-disabled={disabled ? "true" : undefined}
     >
       {children}
     </Tag>
@@ -752,10 +759,63 @@ const PricingSection = () => {
 };
 
 const CTASection = () => {
-  const nextUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/thanks.html`
-      : `${SITE_URL}/thanks.html`;
+  const [status, setStatus] = useState({ type: "idle", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formStartedAt] = useState(() => Date.now());
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setStatus({ type: "idle", message: "" });
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const payload = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      business: formData.get("business"),
+      message: formData.get("message"),
+      website: formData.get("website"),
+      formStartedAt,
+    };
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json().catch(() => ({
+        ok: false,
+        message: "Something went wrong. Please email us directly instead.",
+      }));
+
+      if (!response.ok || !result.ok) {
+        setStatus({
+          type: "error",
+          message: result.message || "We could not send your enquiry just now.",
+        });
+        return;
+      }
+
+      form.reset();
+      setStatus({
+        type: "success",
+        message: "Thanks, your enquiry has been sent. We will be in touch soon.",
+      });
+    } catch {
+      setStatus({
+        type: "error",
+        message: "We could not send your enquiry just now. Please email us directly.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Section id="contact" className="cta-section">
@@ -782,17 +842,10 @@ const CTASection = () => {
             </div>
           </div>
 
-          <form
-            className="cta-form"
-            action={`https://formsubmit.co/${CONTACT_EMAIL}`}
-            method="POST"
-          >
-            <input type="hidden" name="_subject" value="New Frank Sites enquiry" />
-            <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_next" value={nextUrl} />
+          <form className="cta-form" onSubmit={handleSubmit} noValidate>
             <input
               type="text"
-              name="_honey"
+              name="website"
               tabIndex={-1}
               autoComplete="off"
               aria-hidden="true"
@@ -838,9 +891,12 @@ const CTASection = () => {
                 placeholder="Briefly describe what you need, your type of business, number of pages, or any specific requirements."
                 required
               />
-              <Button type="submit" className="button--full">
-                Submit Enquiry
+              <Button type="submit" className="button--full" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Submit Enquiry"}
               </Button>
+              <p className={`form-status form-status--${status.type}`} aria-live="polite">
+                {status.message}
+              </p>
             </div>
           </form>
         </div>

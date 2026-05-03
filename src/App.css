@@ -1061,6 +1061,33 @@ video {
   color: var(--muted);
 }
 
+.form-status {
+  min-height: 1.4rem;
+  margin: 0.2rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.form-status--idle {
+  color: transparent;
+}
+
+.form-status--success {
+  color: color-mix(in srgb, var(--sage) 74%, var(--dark) 26%);
+}
+
+.form-status--error {
+  color: color-mix(in srgb, var(--coral) 82%, var(--dark) 18%);
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+  box-shadow: none;
+}
+
 .site-footer {
   padding: clamp(2rem, 4vw, 2.55rem) 0 1.35rem;
   background: var(--cream);
